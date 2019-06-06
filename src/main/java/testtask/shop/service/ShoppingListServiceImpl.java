@@ -23,6 +23,14 @@ import java.util.List;
 @Service
 public class ShoppingListServiceImpl implements ShoppingListService {
 
+    private static final String SHOPPING_LIST_ID_MUST_BE_EMPTY_FOR_CREATE = "ShoppingList.Id field must be empty for create operation";
+    private static final String PRODUCT_RECORD_ID_MUST_BE_EMPTY_FOR_CREATE = "ShoppingList.ProductRecord.Id field must be empty for create operation";
+    private static final String SHOPPING_LIST_IS_PERIODIC_ALREADY = "This ShoppingList is periodic already";
+    private static final String SHOPPING_LIST_PERIOD_MUST_BE_POSITIVE_FOR_PERIODIC_BUY = "ShoppingList.period field must be >0 for periodic buy operation";
+    private static final String SHOPPING_LIST_IS_NOT_PERIODIC_ALREADY = "This ShoppingList is not periodic already";
+    private static final String PRODUCT_ID_MUST_BE_POSITIVE = "Product.Id field must be >0";
+    private static final String PRODUCT_RECORD_COUNT_MUST_BE_POSITIVE = "ProductRecord.count field must be >0";
+
     @Autowired
     private ShoppingListRepository shoppingListRepository;
 
@@ -49,11 +57,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingList addShoppingList(ShoppingList shoppingList) {
         if (shoppingList.getId() != 0L) {
-            throw new BadRequestException("ShoppingList.Id field must be empty for create operation");
+            throw new BadRequestException(SHOPPING_LIST_ID_MUST_BE_EMPTY_FOR_CREATE);
         }
         for (ProductRecord productRecord : shoppingList.getList()) {
             if (productRecord.getId() != 0L) {
-                throw new BadRequestException("ShoppingList.ProductRecord.Id field must be empty for create operation");
+                throw new BadRequestException(PRODUCT_RECORD_ID_MUST_BE_EMPTY_FOR_CREATE);
             }
         }
         checkShoppingListData(shoppingList);
@@ -113,10 +121,10 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public void startPeriodicBuying(long id) {
         ShoppingList shoppingList = getById(id);
         if (shoppingList.isPeriodic()) {
-            throw new BadRequestException("This ShoppingList is periodic already");
+            throw new BadRequestException(SHOPPING_LIST_IS_PERIODIC_ALREADY);
         }
         if (shoppingList.getPeriod() <= 0L) {
-            throw new BadRequestException("ShoppingList.period field must be >0 for periodic buy operation");
+            throw new BadRequestException(SHOPPING_LIST_PERIOD_MUST_BE_POSITIVE_FOR_PERIODIC_BUY);
         }
         shoppingList.setPeriodic(true);
         Date nextTimeToBuy = new Date();
@@ -132,7 +140,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     public void stopPeriodicBuying(long id) {
         ShoppingList shoppingList = getById(id);
         if (!shoppingList.isPeriodic()) {
-            throw new BadRequestException("This ShoppingList is not periodic already");
+            throw new BadRequestException(SHOPPING_LIST_IS_NOT_PERIODIC_ALREADY);
         }
         shoppingList.setPeriodic(false);
         shoppingList.setNextTimeToBuy(null);
@@ -163,13 +171,13 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         for (ProductRecord productRecord : shoppingList.getList()) {
             Long productId = productRecord.getProduct().getId();
             if (productId <= 0L) {
-                throw new BadRequestException("Product.Id field must be >0");
+                throw new BadRequestException(PRODUCT_ID_MUST_BE_POSITIVE);
             }
             if (!productRepository.findById(productId).isPresent()) {
                 throw new NotFoundException("Product with ID = " + productId + " is not exists");
             }
             if (productRecord.getCount() <= 0L) {
-                throw new BadRequestException("ProductRecord.count field must be >0");
+                throw new BadRequestException(PRODUCT_RECORD_COUNT_MUST_BE_POSITIVE);
             }
             productRecord.setProduct(productRepository.findById(productId).get());
         }

@@ -43,4 +43,6 @@ public interface ProductService {
      */
     List<Product> getAll();
 
+    List<Object[]> getBalances();
+
 }

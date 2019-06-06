@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 
 public class ShoppingListControllerTest extends AbstractTest {
 
+    public static final String URI = "/shopping/lists";
     @Autowired
     private ShoppingListService shoppingListService;
 
@@ -30,8 +31,7 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testGetAllShoppingLists() throws Exception {
-        String uri = "/shopping/lists";
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(URI)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -43,8 +43,7 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testGetShoppingListById() throws Exception {
-        String uri = "/shopping/lists/4";
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(URI+"/4")
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -57,8 +56,7 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testGetNotExistingShoppingListById() throws Exception {
-        String uri = "/shopping/lists/491";
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(URI + "/491")
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -69,7 +67,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testAddShoppingList() throws Exception {
-        String uri = "/shopping/lists";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setPeriod(100);
         Product product = new Product();
@@ -77,7 +74,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList.addProductRecord(new ProductRecord(10,product,shoppingList));
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URI)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -90,13 +87,12 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testAddShoppingListWithoutProductRecord() throws Exception {
-        String uri = "/shopping/lists";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setPeriodic(false);
         shoppingList.setPeriod(0);
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URI)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -108,7 +104,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testAddShoppingListWithNotEmptyId() throws Exception {
-        String uri = "/shopping/lists";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setId(178);
         shoppingList.setPeriodic(false);
@@ -118,7 +113,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList.addProductRecord(new ProductRecord(10,product,shoppingList));
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URI)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -129,7 +124,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testAddShoppingListWithNotEmptyProductRecordId() throws Exception {
-        String uri = "/shopping/lists";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setPeriodic(false);
         shoppingList.setPeriod(100);
@@ -140,7 +134,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList.addProductRecord(productRecord);
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URI)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -151,7 +145,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testAddShoppingListWithZeroInProductId() throws Exception {
-        String uri = "/shopping/lists";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setPeriodic(false);
         shoppingList.setPeriod(0);
@@ -160,7 +153,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList.addProductRecord(new ProductRecord(10,product,shoppingList));
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URI)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -171,7 +164,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testAddShoppingListWithNotExistingProduct() throws Exception {
-        String uri = "/shopping/lists";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setPeriodic(false);
         shoppingList.setPeriod(0);
@@ -180,7 +172,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList.addProductRecord(new ProductRecord(10,product,shoppingList));
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URI)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -191,7 +183,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testAddShoppingListWithZeroCountInProductRecord() throws Exception {
-        String uri = "/shopping/lists";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setPeriodic(false);
         shoppingList.setPeriod(0);
@@ -200,7 +191,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList.addProductRecord(new ProductRecord(0,product,shoppingList));
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URI)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -211,7 +202,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testEditShoppingList() throws Exception {
-        String uri = "/shopping/lists/2";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setId(2);
         shoppingList.setPeriodic(false);
@@ -221,7 +211,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList.addProductRecord(new ProductRecord(10,product,shoppingList));
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(URI + "/2")
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -234,7 +224,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testEditShoppingListWithIdNotMatchRequestPath() throws Exception {
-        String uri = "/shopping/lists/2";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setId(4);
         shoppingList.setPeriodic(false);
@@ -244,7 +233,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList.addProductRecord(new ProductRecord(10,product,shoppingList));
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(URI + "/2")
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -255,7 +244,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testEditNotExistingShoppingList() throws Exception {
-        String uri = "/shopping/lists/264";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setId(264);
         shoppingList.setPeriodic(false);
@@ -265,7 +253,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList.addProductRecord(new ProductRecord(10,product,shoppingList));
 
         String inputJson = super.mapToJson(shoppingList);
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(uri)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(URI + "/264")
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
@@ -276,8 +264,7 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testDeleteShoppingList() throws Exception {
-        String uri = "/shopping/lists/3";
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(uri)).andReturn();
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(URI + "/3")).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
@@ -286,8 +273,7 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testDeleteNotExistingShoppingList() throws Exception {
-        String uri = "/shopping/lists/671";
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(uri)).andReturn();
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(URI + "/671")).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(404, status);
         Exception exception = mvcResult.getResolvedException();
@@ -297,7 +283,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testBuyShoppingListOnceSuccess() throws Exception {
-        String uri = "/shopping/lists/buy/";
         ShoppingList shoppingList = new ShoppingList();
         Product product = new Product();
         product.setId(2);
@@ -305,7 +290,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList = shoppingListService.addShoppingList(shoppingList);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .get(uri + shoppingList.getId())).andReturn();
+                .get(URI + "/buy/" + shoppingList.getId())).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200,status);
         shoppingList = shoppingListService.getById(shoppingList.getId());
@@ -314,7 +299,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testBuyShoppingListOnceNotSuccess() throws Exception {
-        String uri = "/shopping/lists/buy/";
         ShoppingList shoppingList = new ShoppingList();
         Product product = new Product();
         product.setId(2);
@@ -322,7 +306,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList = shoppingListService.addShoppingList(shoppingList);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .get(uri + shoppingList.getId())).andReturn();
+                .get(URI + "/buy/" + shoppingList.getId())).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(500,status);
         Exception exception = mvcResult.getResolvedException();
@@ -331,7 +315,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testPeriodicBuyShoppingListSuccess() throws Exception {
-        String uri = "/shopping/lists";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setPeriod(6000);
         Product product = new Product();
@@ -340,7 +323,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList = shoppingListService.addShoppingList(shoppingList);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .get(uri + "/buy/periodic/" + shoppingList.getId())).andReturn();
+                .get(URI + "/buy/periodic/" + shoppingList.getId())).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200,status);
         Thread.sleep(5000);
@@ -350,7 +333,6 @@ public class ShoppingListControllerTest extends AbstractTest {
 
     @Test
     public void testPeriodicBuyShoppingListNotSuccess() throws Exception {
-        String uri = "/shopping/lists";
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setPeriod(6000);
         Product product = new Product();
@@ -359,7 +341,7 @@ public class ShoppingListControllerTest extends AbstractTest {
         shoppingList = shoppingListService.addShoppingList(shoppingList);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                .get(uri + "/buy/periodic/" + shoppingList.getId())).andReturn();
+                .get(URI + "/buy/periodic/" + shoppingList.getId())).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200,status);
         Thread.sleep(5000);

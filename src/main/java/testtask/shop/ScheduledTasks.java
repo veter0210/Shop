@@ -72,8 +72,9 @@ public class ScheduledTasks {
     // Раз в 5 минут добавляет отстаки продуктов
     @Scheduled(fixedRate = 300000)
     public void addStocks() {
+        int countToAddToStock = 20;
         for (Store store : storeService.getAll()) {
-            store.setStockBalance(store.getStockBalance() + 20);
+            store.setStockBalance(store.getStockBalance() + countToAddToStock);
             storeService.editStore(store);
         }
     }

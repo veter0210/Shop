@@ -9,6 +9,7 @@ import testtask.shop.model.Store;
 import testtask.shop.repository.ProductRecordRepository;
 import testtask.shop.repository.ProductRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +18,15 @@ import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
+    private static final String PRODUCT_ID_MUST_BE_POSITIVE_FOR_UPDATE = "Product.Id field must be >0 for update operation";
+    private static final String PRODUCT_ID_MUST_BE_EMPTY_FOR_CREATE_OPERATION = "Product.Id field must be empty for create operation";
+    private static final String PRODUCT_STORE_ID_MUST_BE_EMPTY_FOR_CREATE = "Product.store.Id field must be empty for create operation";
+    private static final String STOCK_BALANCE_FIELD_MUST_BE_POSITIVE = "Product.store.stockBalance field must be >= 0";
+    private static final String DELETE_ALL_PRODUCT_RECORDS_POINTING_ON_THIS_PRODUCT_FIRST = "You must delete all ProductRecords pointing on this product from your ShoppingLists first";
+    private static final String PRODUCT_ID_MUST_BE_EQUAL_TO_STORE_ID_FOR_UPDATE = "Product.Id must be equal to Store.Id for update operation";
+    private static final String STOCK_BALANCE_MUST_BE_POSITIVE = "Store.stockBalance field must be >=0";
+    private static final String PRODUCT_TITLE_MUST_NOT_BE_EMPTY = "Product.title field must not be empty";
 
     @Autowired
     private ProductRepository productRepository;
@@ -38,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product addProduct(Product product) {
         if (product.getId() != 0L) {
-            throw new BadRequestException("Product.Id field must be empty for create operation");
+            throw new BadRequestException(PRODUCT_ID_MUST_BE_EMPTY_FOR_CREATE_OPERATION);
         }
         checkProductTitle(product);
         if (product.getStore() == null) {
@@ -46,10 +56,10 @@ public class ProductServiceImpl implements ProductService {
             product.setStore(store);
         } else {
             if (product.getStore().getId() != 0L) {
-                throw new BadRequestException("Product.store.Id field must be empty for create operation");
+                throw new BadRequestException(PRODUCT_STORE_ID_MUST_BE_EMPTY_FOR_CREATE);
             }
             if (product.getStore().getStockBalance() < 0) {
-                throw new BadRequestException("Product.store.stockBalance field must be >= 0");
+                throw new BadRequestException(STOCK_BALANCE_FIELD_MUST_BE_POSITIVE);
             }
             product.getStore().setProduct(product);
         }
@@ -65,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("Product with ID = " + id + " is not exists");
         }
         if (productRecordRepository.existsByProduct(productRepository.findById(id).get())) {
-            throw new BadRequestException("You must delete all ProductRecords pointing on this product from your ShoppingLists first");
+            throw new BadRequestException(DELETE_ALL_PRODUCT_RECORDS_POINTING_ON_THIS_PRODUCT_FIRST);
         }
         productRepository.deleteById(id);
     }
@@ -76,25 +86,39 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product editProduct(Product product) {
         if (product.getId() <= 0L) {
-            throw new BadRequestException("Product.Id field must be >0 for update operation");
+            throw new BadRequestException(PRODUCT_ID_MUST_BE_POSITIVE_FOR_UPDATE);
         }
         checkProductTitle(product);
         if (!productRepository.findById(product.getId()).isPresent()) {
             throw new NotFoundException("Product with ID = " + product.getId() + " is not exists");
         }
         if (product.getId() != product.getStore().getId()) {
-            throw new BadRequestException("Product.Id must be equal to Store.Id for update operation");
+            throw new BadRequestException(PRODUCT_ID_MUST_BE_EQUAL_TO_STORE_ID_FOR_UPDATE);
         }
         if (product.getStore().getStockBalance() < 0) {
-            throw new BadRequestException("Store.stockBalance field must be >=0");
+            throw new BadRequestException(STOCK_BALANCE_MUST_BE_POSITIVE);
         }
         return productRepository.saveAndFlush(product);
     }
 
     private void checkProductTitle(Product product) {
         if (product.getTitle() == null || product.getTitle().equals("")) {
-            throw new BadRequestException("Product.title field must not be empty");
+            throw new BadRequestException(PRODUCT_TITLE_MUST_NOT_BE_EMPTY);
         }
+    }
+
+    @Override
+    public List<Object[]> getBalances() {
+        List<Object[]> resultSet = new ArrayList<>();
+        List<Product> products = productRepository.findAll();
+        for (Product product : products) {
+            Object[] set = new Object[3];
+            set[0] = product.getId();
+            set[1] = product.getTitle();
+            set[2] = product.getStore().getStockBalance();
+            resultSet.add(set);
+        }
+        return resultSet;
     }
 
     /**

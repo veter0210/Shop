@@ -27,24 +27,11 @@ public class ProductController  {
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    private StoreService storeService;
-
     @GetMapping
     @ResponseStatus(code = HttpStatus.OK)
     @ApiOperation(value = "Запрос остатков всех продуктов", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Object[]> getProductStockBalance() {
-        List<Object[]> resultSet = new ArrayList<>();
-        List<Store> stores = storeService.getAll();
-        for (Store store : stores) {
-            Object[] set = new Object[3];
-            set[0] = store.getProduct().getId();
-            set[1] = store.getProduct().getTitle();
-            set[2] = store.getStockBalance();
-
-            resultSet.add(set);
-        }
-        return resultSet;
+        return productService.getBalances();
     }
 
     @PostMapping
