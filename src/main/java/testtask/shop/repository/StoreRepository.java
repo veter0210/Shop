@@ -1,0 +1,15 @@
+package testtask.shop.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import testtask.shop.model.Store;
+
+import java.util.List;
+
+/**
+ * Created by Dmitry Martynov on 29.05.2019
+ */
+
+@Repository
+public interface StoreRepository extends JpaRepository<Store, Long> {
+}
